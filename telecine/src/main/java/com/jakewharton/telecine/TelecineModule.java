@@ -2,21 +2,31 @@ package com.jakewharton.telecine;
 
 import android.content.ContentResolver;
 import android.content.SharedPreferences;
+
 import com.google.android.gms.analytics.GoogleAnalytics;
 import com.google.android.gms.analytics.Tracker;
+
+import java.util.Map;
+
+import javax.inject.Singleton;
+
 import dagger.Module;
 import dagger.Provides;
-import java.util.Map;
-import javax.inject.Singleton;
 import timber.log.Timber;
 
 import static android.content.Context.MODE_PRIVATE;
 
-@Module(injects = {
+@Module(
+    //声明要注入此Module对象的类
+    injects = {
     TelecineActivity.class,
     TelecineService.class,
     TelecineShortcutConfigureActivity.class,
     TelecineShortcutLaunchActivity.class,
+    //include标签可以引入已经声明的module
+    //library标签表明这个Module可能不会被使用
+    //complete 意思是这是一个不完整的module, 为何这么说, 可以看出provideLocationManager的参数没有响应提供值的Providers呢,
+    // 为什么呢, 因为这个module接下来要被另外一个module引用, 所以application这个参数我们将在下一个module里提供.
 })
 final class TelecineModule {
   private static final String PREFERENCES_NAME = "telecine";
@@ -47,6 +57,16 @@ final class TelecineModule {
     return new Analytics.GoogleAnalytics(tracker);
   }
 
+  /**
+   * 定义一个获取内容提供者的module
+   * Singleton表示单例且线程安全
+   *
+   * 如果有同样类型的对象注入的问题,
+   * 问题的解决办法就是使用@Named来标识其使用的是哪一个@Provides
+   *
+   *
+   * @return
+   */
   @Provides @Singleton ContentResolver provideContentResolver() {
     return app.getContentResolver();
   }

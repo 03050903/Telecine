@@ -9,6 +9,11 @@ import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.widget.Spinner;
 import android.widget.Switch;
+
+import com.google.android.gms.analytics.HitBuilders;
+
+import javax.inject.Inject;
+
 import butterknife.Bind;
 import butterknife.BindColor;
 import butterknife.BindString;
@@ -17,8 +22,6 @@ import butterknife.OnCheckedChanged;
 import butterknife.OnClick;
 import butterknife.OnItemSelected;
 import butterknife.OnLongClick;
-import com.google.android.gms.analytics.HitBuilders;
-import javax.inject.Inject;
 import timber.log.Timber;
 
 public final class TelecineActivity extends Activity {
@@ -52,6 +55,7 @@ public final class TelecineActivity extends Activity {
 
     Resources res = getResources();
     Bitmap taskIcon = BitmapFactory.decodeResource(res, R.drawable.ic_videocam_white_48dp);
+    //设置app在最近列表里面的描述
     setTaskDescription(new ActivityManager.TaskDescription(appName, taskIcon, primaryNormal));
 
     videoSizePercentageAdapter = new VideoSizePercentageAdapter(this);

@@ -31,6 +31,7 @@ public final class TelecineApplication extends Application {
       Timber.plant(tree);
     }
 
+    //获取TelecineApplication的对象图 （包含了其中的依赖关系）
     objectGraph = ObjectGraph.create(new TelecineModule(this));
   }
 
