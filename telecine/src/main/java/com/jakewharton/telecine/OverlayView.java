@@ -14,11 +14,13 @@ import android.view.animation.AccelerateInterpolator;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.FrameLayout;
 import android.widget.TextView;
+
+import java.util.Locale;
+
 import butterknife.Bind;
 import butterknife.BindDimen;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import java.util.Locale;
 
 import static android.graphics.PixelFormat.TRANSLUCENT;
 import static android.os.Build.VERSION_CODES.LOLLIPOP_MR1;
@@ -37,10 +39,22 @@ final class OverlayView extends FrameLayout {
   private static final int NON_COUNTDOWN_DELAY = 500;
   private static final int DURATION_ENTER_EXIT = 300;
 
+  /**
+   * 创建一个 OverlayView实例
+   * @param context
+   * @param listener
+   * @param showCountDown
+   * @return
+   */
   static OverlayView create(Context context, Listener listener, boolean showCountDown) {
     return new OverlayView(context, listener, showCountDown);
   }
 
+  /**
+   * 创建OverlayView的展示方式
+   * @param context
+   * @return
+   */
   static WindowManager.LayoutParams createLayoutParams(Context context) {
     Resources res = context.getResources();
     int width = res.getDimensionPixelSize(R.dimen.overlay_width);
@@ -51,11 +65,12 @@ final class OverlayView extends FrameLayout {
     }
 
     final WindowManager.LayoutParams params =
-        new WindowManager.LayoutParams(width, height, TYPE_SYSTEM_ERROR, FLAG_NOT_FOCUSABLE
-            | FLAG_NOT_TOUCH_MODAL
-            | FLAG_LAYOUT_NO_LIMITS
-            | FLAG_LAYOUT_INSET_DECOR
-            | FLAG_LAYOUT_IN_SCREEN, TRANSLUCENT);
+        new WindowManager.LayoutParams(width, height, TYPE_SYSTEM_ERROR, FLAG_NOT_FOCUSABLE  //不获得焦点与NOT_TOUCH_MODEL配合使用
+            | FLAG_NOT_TOUCH_MODAL //非模态,不阻止事件传递到后面的窗口事件
+            | FLAG_LAYOUT_NO_LIMITS //允许窗口扩展到屏幕之外
+            | FLAG_LAYOUT_INSET_DECOR //设置这个后能保证视图不被状态栏等给遮罩
+            | FLAG_LAYOUT_IN_SCREEN, //窗口占满整个屏幕，忽略周围的装饰边框（例如状态栏）
+                TRANSLUCENT);
     params.gravity = Gravity.TOP | gravityEndLocaleHack();
 
     return params;
@@ -92,11 +107,18 @@ final class OverlayView extends FrameLayout {
   private final Listener listener;
   private final boolean showCountDown;
 
+  /**
+   * 构造函数
+   * @param context
+   * @param listener
+   * @param showCountDown
+   */
   private OverlayView(Context context, Listener listener, boolean showCountDown) {
     super(context);
     this.listener = listener;
     this.showCountDown = showCountDown;
 
+    //view的子类中自带inflate方法来wrap视图内容
     inflate(context, R.layout.overlay_view, this);
     ButterKnife.bind(this);
 
@@ -104,10 +126,14 @@ final class OverlayView extends FrameLayout {
       animationWidth = -animationWidth; // Account for animating in from the other side of screen.
     }
 
+    //设置view的长按
     CheatSheet.setup(cancelView);
     CheatSheet.setup(startView);
   }
 
+  /**
+   * 在视图刚attach到窗口的时候 执行动画 特别是在自定义view 可以再此执行动画
+   */
   @Override protected void onAttachedToWindow() {
     super.onAttachedToWindow();
 
@@ -130,8 +156,10 @@ final class OverlayView extends FrameLayout {
 
   @OnClick(R.id.record_overlay_start) void onStartClicked() {
     recordingView.setVisibility(VISIBLE);
+    //获取到视图的中心位置
     int centerX = (int) (startView.getX() + (startView.getWidth() / 2));
     int centerY = (int) (startView.getY() + (startView.getHeight() / 2));
+    //执行 5.0以上的 reveal 效果
     Animator reveal = createCircularReveal(recordingView, centerX, centerY, 0, getWidth() / 2f);
     reveal.addListener(new AnimatorListenerAdapter() {
       @Override public void onAnimationEnd(Animator animation) {
@@ -151,6 +179,9 @@ final class OverlayView extends FrameLayout {
     }, showCountDown ? COUNTDOWN_DELAY : NON_COUNTDOWN_DELAY);
   }
 
+  /**
+   * 开始录屏
+   */
   private void startRecording() {
     recordingView.setVisibility(INVISIBLE);
     stopView.setVisibility(VISIBLE);
@@ -167,6 +198,9 @@ final class OverlayView extends FrameLayout {
     countdown(countdown, 0); // array resource must not be empty
   }
 
+  /**
+   * 倒计时完成后隐藏recordingView 然后开始录屏
+   */
   private void countdownComplete() {
     recordingView.animate()
         .alpha(0)
@@ -178,6 +212,11 @@ final class OverlayView extends FrameLayout {
         });
   }
 
+  /**
+   * 递归实现倒计时
+   * @param countdownArr
+   * @param index
+   */
   private void countdown(final String[] countdownArr, final int index) {
     postDelayed(new Runnable() {
       @Override public void run() {

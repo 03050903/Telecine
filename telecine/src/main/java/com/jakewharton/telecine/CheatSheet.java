@@ -24,6 +24,7 @@ import android.view.View;
 import android.widget.Toast;
 
 /**
+ * 单独处理只有图片的UI元素的长按工具类
  * Helper class for showing cheat sheets (tooltips) for icon-only UI elements on long-press. This
  * is already default platform behavior for icon-only {@link android.app.ActionBar} items and tabs.
  * This class provides this behavior for any other such UI element.

@@ -20,6 +20,13 @@ public final class TelecineService extends Service {
   private static final int NOTIFICATION_ID = 99118822;
   private static final String SHOW_TOUCHES = "show_touches";
 
+  /**
+   * 开启服务 - 传递录屏后的数据
+   * @param context
+   * @param resultCode
+   * @param data
+   * @return
+   */
   public static Intent newIntent(Context context, int resultCode, Intent data) {
     Intent intent = new Intent(context, TelecineService.class);
     intent.putExtra(EXTRA_RESULT_CODE, resultCode);
@@ -41,6 +48,7 @@ public final class TelecineService extends Service {
   private final RecordingSession.Listener listener = new RecordingSession.Listener() {
     @Override public void onStart() {
       if (showTouchesProvider.get()) {
+        //显示系统的点按点
         Settings.System.putInt(contentResolver, SHOW_TOUCHES, 1);
       }
 
@@ -61,6 +69,7 @@ public final class TelecineService extends Service {
           .build();
 
       Timber.d("Moving service into the foreground with recording notification.");
+      //将该服务置于前台执行,执行期间 通知消息一直对用户可见
       startForeground(NOTIFICATION_ID, notification);
     }
 
@@ -69,6 +78,7 @@ public final class TelecineService extends Service {
         Settings.System.putInt(contentResolver, SHOW_TOUCHES, 0);
       }
 
+      //移除通知消息,该服务从前台执行移除,可以随时被kill
       stopForeground(true /* remove notification */);
     }
 
@@ -92,6 +102,7 @@ public final class TelecineService extends Service {
       throw new IllegalStateException("Result code or data missing.");
     }
 
+    //将改服务注入到objectGraph
     ((TelecineApplication) getApplication()).inject(this);
 
     recordingSession =

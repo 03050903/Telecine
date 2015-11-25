@@ -16,8 +16,10 @@ final class CaptureHelper {
   }
 
   static void fireScreenCaptureIntent(Activity activity, Analytics analytics) {
+    //获取 MediaProjection token来录屏
     MediaProjectionManager manager =
         (MediaProjectionManager) activity.getSystemService(MEDIA_PROJECTION_SERVICE);
+    //开始录屏 但是不能获取到系统的声音 not system audio
     Intent intent = manager.createScreenCaptureIntent();
     activity.startActivityForResult(intent, CREATE_SCREEN_CAPTURE);
 

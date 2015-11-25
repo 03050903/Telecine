@@ -34,7 +34,7 @@ public final class TelecineActivity extends Activity {
   @BindString(R.string.app_name) String appName;
   @BindColor(R.color.primary_normal) int primaryNormal;
 
-  @Inject @VideoSizePercentage IntPreference videoSizePreference;
+  @Inject @VideoSizePercentage IntPreference videoSizePreference;//VideoSizePercentage 这个应该是一个限定符区别不同的 preference
   @Inject @ShowCountdown BooleanPreference showCountdownPreference;
   @Inject @HideFromRecents BooleanPreference hideFromRecentsPreference;
   @Inject @RecordingNotification BooleanPreference recordingNotificationPreference;
@@ -58,6 +58,7 @@ public final class TelecineActivity extends Activity {
     //设置app在最近列表里面的描述
     setTaskDescription(new ActivityManager.TaskDescription(appName, taskIcon, primaryNormal));
 
+    //配置spinner
     videoSizePercentageAdapter = new VideoSizePercentageAdapter(this);
 
     videoSizePercentageView.setAdapter(videoSizePercentageAdapter);
@@ -172,8 +173,13 @@ public final class TelecineActivity extends Activity {
 
   @Override protected void onStop() {
     super.onStop();
+    //isChangingConfigurations 是否清楚当前activity的config状态,
+    // This is often used in
+//    * {@link #onStop} to determine whether the state needs to be cleaned up or will be passed
+//    * on to the next instance of the activity via {@link #onRetainNonConfigurationInstance()}.
     if (hideFromRecentsPreference.get() && !isChangingConfigurations()) {
       Timber.d("Removing task because hide from recents preference was enabled.");
+      //移除最近列表里面的快捷方式
       finishAndRemoveTask();
     }
   }
