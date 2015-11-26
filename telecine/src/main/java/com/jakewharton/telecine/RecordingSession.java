@@ -210,25 +210,25 @@ final class RecordingSession {
         int displayWidth = displayMetrics.widthPixels;
         int displayHeight = displayMetrics.heightPixels;
         int displayDensity = displayMetrics.densityDpi;
-        Timber.d("Display size: %s x %s @ %s", displayWidth, displayHeight, displayDensity);
+        Timber.i("Display size: %s x %s @ %s", displayWidth, displayHeight, displayDensity);
 
         //获取 横竖屏 配置
         Configuration configuration = context.getResources().getConfiguration();
         boolean isLandscape = configuration.orientation == ORIENTATION_LANDSCAPE;
-        Timber.d("Display landscape: %s", isLandscape);
+        Timber.i("Display landscape: %s", isLandscape);
 
         // Get the best camera profile available. We assume MediaRecorder supports the highest.
-        //获取录像机的最高de分辨率轮廓
+        //获取录像机的最高d帧率 没有就默认是30
         CamcorderProfile camcorderProfile = CamcorderProfile.get(CamcorderProfile.QUALITY_HIGH);
         //检查是否正确获取到了profile
         int cameraWidth = camcorderProfile != null ? camcorderProfile.videoFrameWidth : -1;
         int cameraHeight = camcorderProfile != null ? camcorderProfile.videoFrameHeight : -1;
         //通过 CamcorderProfile获取 camera的帧率,默认为30
         int cameraFrameRate = camcorderProfile != null ? camcorderProfile.videoFrameRate : 30;
-        Timber.d("Camera size: %s x %s framerate: %s", cameraWidth, cameraHeight, cameraFrameRate);
+        Timber.i("Camera size: %s x %s framerate: %s", cameraWidth, cameraHeight, cameraFrameRate);
 
         int sizePercentage = videoSizePercentage.get();
-        Timber.d("Size percentage: %s", sizePercentage);
+        Timber.i("Size percentage: %s", sizePercentage);
 
         return calculateRecordingInfo(displayWidth, displayHeight, displayDensity, isLandscape,
                 cameraWidth, cameraHeight, cameraFrameRate, sizePercentage);
