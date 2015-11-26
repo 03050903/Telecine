@@ -30,6 +30,7 @@ public final class TelecineActivity extends Activity {
   @Bind(R.id.switch_hide_from_recents) Switch hideFromRecentsView;
   @Bind(R.id.switch_recording_notification) Switch recordingNotificationView;
   @Bind(R.id.switch_show_touches) Switch showTouchesView;
+  @Bind(R.id.switch_record_audio) Switch recordAudio;
 
   @BindString(R.string.app_name) String appName;
   @BindColor(R.color.primary_normal) int primaryNormal;
@@ -39,6 +40,7 @@ public final class TelecineActivity extends Activity {
   @Inject @HideFromRecents BooleanPreference hideFromRecentsPreference;
   @Inject @RecordingNotification BooleanPreference recordingNotificationPreference;
   @Inject @ShowTouches BooleanPreference showTouchesPreference;
+  @Inject @RecordAudio BooleanPreference recordAudioPreference;
 
   @Inject Analytics analytics;
 
@@ -69,6 +71,7 @@ public final class TelecineActivity extends Activity {
     hideFromRecentsView.setChecked(hideFromRecentsPreference.get());
     recordingNotificationView.setChecked(recordingNotificationPreference.get());
     showTouchesView.setChecked(showTouchesPreference.get());
+    recordAudio.setChecked(recordAudioPreference.get());
   }
 
   @OnClick(R.id.launch) void onLaunchClicked() {
@@ -164,6 +167,17 @@ public final class TelecineActivity extends Activity {
           .build());
     }
   }
+
+    @OnCheckedChanged(R.id.switch_record_audio) void onRecordAudioChanged(){
+        boolean newValue = recordAudio.isChecked();
+        boolean oldValue = recordAudioPreference.get();
+        if(newValue != oldValue){
+            Timber.d("Record Audio preference changing to %s",newValue);
+            recordAudioPreference.set(newValue);
+
+            //Don't need google analytics
+        }
+    }
 
   @Override protected void onActivityResult(int requestCode, int resultCode, Intent data) {
     if (!CaptureHelper.handleActivityResult(this, requestCode, resultCode, data, analytics)) {

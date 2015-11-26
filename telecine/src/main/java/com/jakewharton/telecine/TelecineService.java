@@ -38,6 +38,7 @@ public final class TelecineService extends Service {
   @Inject @VideoSizePercentage Provider<Integer> videoSizePercentageProvider;
   @Inject @RecordingNotification Provider<Boolean> recordingNotificationProvider;
   @Inject @ShowTouches Provider<Boolean> showTouchesProvider;
+  @Inject @RecordAudio Provider<Boolean> recordAudioProvider;
 
   @Inject Analytics analytics;
   @Inject ContentResolver contentResolver;
@@ -107,7 +108,7 @@ public final class TelecineService extends Service {
 
     recordingSession =
         new RecordingSession(this, listener, resultCode, data, analytics, showCountdownProvider,
-            videoSizePercentageProvider);
+            videoSizePercentageProvider,recordAudioProvider.get());
     recordingSession.showOverlay();
 
     return START_NOT_STICKY;
